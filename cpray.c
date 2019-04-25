@@ -115,7 +115,7 @@ void changefile(char* file, enum MODE mode) {
     long int allocated = 0;
     char* instrumented = (char*)malloc(sizeof(char) * capacity);
 
-    if (NULL != strstr(contents, "stdio.h")) {
+    if (NULL == strstr(contents, "stdio.h")) {
         strcpy(instrumented, standardheader);
         allocated = strlen(standardheader);
     }
