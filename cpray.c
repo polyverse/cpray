@@ -130,7 +130,7 @@ void changefile(char* file, enum MODE mode) {
 
         if (contents[i] == '{' && last_non_space == ')') {
             // Only when { is followed by ) is it likely to be a code block.
-            snprintf(printfbuf, PRINTFBUFSIZE, "\r\nfprintf(stderr, \"cpray,%s,%d\");\r\n", file, lineno);
+            snprintf(printfbuf, PRINTFBUFSIZE, "\nfprintf(stderr, \"cpray,%s,%d\");\n", file, lineno);
             strcpy(instrumented+allocated, printfbuf);
             allocated += strlen(printfbuf);
         } else if (contents[i] == '\n') {
