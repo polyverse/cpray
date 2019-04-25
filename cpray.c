@@ -91,7 +91,7 @@ int endswith(const char *str, const char *suffix)
 void changefile(char* file, enum MODE mode) {
     FILE *fp;
     long int size = 0;
-    char* standardheader = "#include <stdio.n>\n";
+    char* standardheader = "#include <stdio.h>\n";
 
     fp = fopen(file, "r");
     if (fp == NULL) {
