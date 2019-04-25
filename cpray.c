@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <ctype.h>
 
 #define GetCurrentDir getcwd
 
@@ -119,22 +120,25 @@ void changefile(char* file, enum MODE mode) {
         allocated = strlen(standardheader);
     }
 
-
     int lineno=2;
-
+    char last_non_space = 0;
     #define PRINTFBUFSIZE 10000
     char printfbuf[PRINTFBUFSIZE];
     for (int i = 0; i < size; i++) {
         instrumented[allocated] = contents[i];
         allocated++;
 
-
-        if (contents[i] == '{') {
+        if (contents[i] == '{' && last_non_space == ')') {
+            // Only when { is followed by ) is it likely to be a code block.
             snprintf(printfbuf, PRINTFBUFSIZE, "\nprintf(\"cpray,%s,%d\");\n", file, lineno);
             strcpy(instrumented+allocated, printfbuf);
             allocated += strlen(printfbuf);
         } else if (contents[i] == '\n') {
             lineno++;
+        }
+
+        if (0 == isspace(contents[i])) {
+            last_non_space = contents[i];
         }
 
         if (allocated > capacity) {
