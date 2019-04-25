@@ -149,6 +149,7 @@ void changefile(char* file, enum MODE mode) {
             printf("Error opening file for reading: %s. Errno: %d. Error string: %s\n", file, errno, strerror(errno));
             return;
         }
+        fwrite(instrumented, 1, allocated, fp);
         fclose(fp);
     }
 
