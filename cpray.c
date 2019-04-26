@@ -127,16 +127,7 @@ void changefile(char* file, enum MODE mode) {
     #define PRINTFBUFSIZE 10000
     char printfbuf[PRINTFBUFSIZE];
     for (int i = 0; i < size; i++) {
-        instrumented[allocated] = contents[i];
-        allocated++;
-
-        if (contents[i] == '{') {
-            brace++;
-        } else if (contents[i] == '}') {
-            brace--;
-        }
-
-        if (contents[i] == '{' && last_non_space == ')' && 0 == is_macro_line && brace > 1) {
+        if (contents[i] == '}' && last_non_space == ')' && 0 == is_macro_line && brace > 1) {
             // Only when { is followed by ) is it likely to be a code block.
             snprintf(printfbuf, PRINTFBUFSIZE, "fprintf(stderr, \"cpray,%s,%d\");", file, lineno);
             strcpy(instrumented+allocated, printfbuf);
@@ -144,6 +135,11 @@ void changefile(char* file, enum MODE mode) {
         } else if (contents[i] == '\n') {
             lineno++;
         }
+
+        instrumented[allocated] = contents[i];
+        allocated++;
+
+
 
         if (0 == isspace(contents[i])) {
             last_non_space = contents[i];
