@@ -127,19 +127,19 @@ void changefile(char* file, enum MODE mode) {
     #define PRINTFBUFSIZE 10000
     char printfbuf[PRINTFBUFSIZE];
     for (int i = 0; i < size; i++) {
-        if (contents[i] == '}' && last_non_space == ')' && 0 == is_macro_line && brace > 1) {
-            // Only when { is followed by ) is it likely to be a code block.
-            snprintf(printfbuf, PRINTFBUFSIZE, "fprintf(stderr, \"cpray,%s,%d\");", file, lineno);
-            strcpy(instrumented+allocated, printfbuf);
-            allocated += strlen(printfbuf);
+        if (contents[i] == '{' && last_non_space == ')' && 0 == is_macro_line) {
+            brace++;
+        } else if (contents[i] == '}') {
+            brace--;
+            if (brace == 0) {
+                // Only when { is followed by ) is it likely to be a code block.
+                snprintf(printfbuf, PRINTFBUFSIZE, "fprintf(stderr, \"cpray,%s,%d\\n\");", file, lineno);
+                strcpy(instrumented+allocated, printfbuf);
+                allocated += strlen(printfbuf);
+            }
         } else if (contents[i] == '\n') {
             lineno++;
         }
-
-        instrumented[allocated] = contents[i];
-        allocated++;
-
-
 
         if (0 == isspace(contents[i])) {
             last_non_space = contents[i];
@@ -150,6 +150,9 @@ void changefile(char* file, enum MODE mode) {
         } else if ('\n' == contents[i]) {
             is_macro_line = 0;
         }
+
+        instrumented[allocated] = contents[i];
+        allocated++;
 
         if (allocated > capacity) {
             printf("Allocated new file exceeded the buffered capacity: %s\n", file);
